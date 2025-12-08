@@ -1,2 +1,2 @@
-export { Companion } from "./companion/companion";
-export { createInstructions } from "./companion/instructions";
+export { Companion } from "./companion/companion.ts";
+export { createInstructions } from "./companion/instructions.ts";

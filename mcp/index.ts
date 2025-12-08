@@ -1,9 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import express from "express";
-import type WebSocket from "ws";
+import type { WebSocket } from "ws";
 import { WebSocketServer } from "ws";
-import { z } from "zod";
+import { treeifyError, z } from "zod";
 
 const server = new McpServer({
 	name: "resource-server",
@@ -17,7 +17,7 @@ const historySchema = z.object({
 type History = z.infer<typeof historySchema>;
 
 let resourceLevel = 100;
-const history: History[] = [{ from: "maril", message: "みんなで話そう!" }];
+const history: History[] = [];
 
 const wsClients = new Set<WebSocket>();
 
@@ -161,7 +161,7 @@ app.post("/add", async (req, res) => {
 		});
 	} catch (err) {
 		if (err instanceof z.ZodError) {
-			res.status(400).json({ success: false, errors: err.errors });
+			res.status(400).json({ success: false, errors: treeifyError(err) });
 		} else {
 			res
 				.status(500)

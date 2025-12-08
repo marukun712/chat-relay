@@ -1,8 +1,8 @@
 import readline from "node:readline";
 import WebSocket from "ws";
 
-const WS_URL = "ws://localhost:3000";
-const ADD_URL = "http://localhost:3000/add";
+export const WS_URL = "ws://localhost:3000";
+export const ADD_URL = "http://localhost:3000/add";
 const FROM_NAME = "user";
 
 const ws = new WebSocket(WS_URL);
@@ -30,6 +30,7 @@ const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout,
 	terminal: true,
+	prompt: "> ",
 });
 
 async function sendMessage(message: string) {

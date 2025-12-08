@@ -1,20 +1,33 @@
 import { experimental_createMCPClient } from "@ai-sdk/mcp";
 import { type LanguageModel, ToolLoopAgent } from "ai";
-import type { Metadata } from "../schema";
-import { createInstructions } from "./instructions";
+import WebSocket from "ws";
+import { WS_URL } from "../../client.ts";
+import type { Metadata } from "../schema.ts";
+import { createInstructions } from "./instructions.ts";
 
 export class Companion {
-	private metadata: Metadata;
-	private agent!: ToolLoopAgent;
-	private model: LanguageModel;
+	private agent: ToolLoopAgent;
 	private isGenerating: boolean = false;
+	private ws: WebSocket;
 
-	constructor(metadata: Metadata, model: LanguageModel) {
-		this.metadata = metadata;
-		this.model = model;
+	constructor(agent: ToolLoopAgent) {
+		this.agent = agent;
+		this.ws = new WebSocket(WS_URL);
+
+		this.ws.on("open", () => {
+			console.log("Connected to WS server");
+		});
+
+		this.ws.on("message", () => {
+			this.generate();
+		});
+
+		this.ws.on("close", () => {
+			console.log("WS connection closed");
+		});
 	}
 
-	async initialize() {
+	static async initialize(metadata: Metadata, model: LanguageModel) {
 		const client = await experimental_createMCPClient({
 			transport: {
 				type: "http",
@@ -24,16 +37,13 @@ export class Companion {
 
 		const tools = await client.tools();
 
-		const instructions = createInstructions(this.metadata);
-		this.agent = new ToolLoopAgent({
-			model: this.model,
+		const instructions = createInstructions(metadata);
+		const agent = new ToolLoopAgent({
+			model,
 			instructions,
 			tools,
 		});
-
-		setInterval(() => {
-			this.generate();
-		}, 5000);
+		return new Companion(agent);
 	}
 
 	async generate() {

@@ -1,4 +1,4 @@
-import type { Metadata } from "../schema";
+import type { Metadata } from "../schema.ts";
 
 export function createInstructions(metadata: Metadata): string {
 	return `

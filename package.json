@@ -9,7 +9,9 @@
 		"lint": "biome lint ./",
 		"lint:fix": "biome lint --write ./",
 		"check": "biome check ./",
-		"check:fix": "biome check --write ./"
+		"check:fix": "biome check --write ./",
+		"start": "bun run index.ts",
+		"client": "bun run client.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "latest",
@@ -21,22 +23,10 @@
 	"dependencies": {
 		"@ai-sdk/anthropic": "beta",
 		"@ai-sdk/mcp": "beta",
-		"@chainsafe/libp2p-gossipsub": "^14.1.2",
-		"@chainsafe/libp2p-noise": "16.1.4",
-		"@chainsafe/libp2p-yamux": "7.0.4",
-		"@libp2p/identify": "3.0.38",
-		"@libp2p/interface": "2.11.0",
-		"@libp2p/mdns": "11.0.46",
-		"@libp2p/tcp": "10.1.19",
-		"@noble/curves": "jsr:^2.0.1",
-		"@noble/hashes": "^2.0.1",
 		"@openrouter/ai-sdk-provider": "^1.2.0",
 		"@types/ws": "^8.18.1",
 		"ai": "beta",
 		"dotenv": "^17.2.3",
-		"libp2p": "2.9.0",
-		"loro-crdt": "^1.8.4",
-		"merkletreejs": "^0.6.0",
 		"ws": "^8.18.3",
 		"zod": "^4.1.12"
 	}
