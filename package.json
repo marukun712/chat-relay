@@ -1,5 +1,5 @@
 {
-	"name": "llm-test",
+	"name": "chat-relay",
 	"module": "index.ts",
 	"type": "module",
 	"private": true,

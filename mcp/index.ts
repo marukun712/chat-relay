@@ -6,7 +6,7 @@ import { WebSocketServer } from "ws";
 import { treeifyError, z } from "zod";
 
 const server = new McpServer({
-	name: "resource-server",
+	name: "chat-relay",
 	version: "1.0.0",
 });
 
@@ -17,6 +17,7 @@ const historySchema = z.object({
 type History = z.infer<typeof historySchema>;
 
 let resourceLevel = 100;
+let closingLevel = 0;
 const history: History[] = [];
 
 const wsClients = new Set<WebSocket>();
@@ -70,7 +71,20 @@ server.registerTool(
 		resourceLevel -= amount;
 		console.log("消費", amount, "残量", resourceLevel);
 		history.push({ from, message });
-		notify({ from, message });
+		if (closingLevel !== 100) notify({ from, message });
+
+		if (history.length > 25) {
+			closingLevel = 100;
+			setTimeout(() => {
+				history.length = 0;
+				closingLevel = 0;
+			}, 5000);
+		} else if (history.length > 15) {
+			closingLevel = 50;
+		} else if (history.length > 10) {
+			closingLevel = 25;
+		}
+		console.log("Closing", closingLevel);
 
 		setTimeout(() => {
 			resourceLevel = Math.min(100, resourceLevel + amount);
@@ -110,7 +124,7 @@ server.registerTool(
 			content: [
 				{ type: "text", text: JSON.stringify({ resource: resourceLevel }) },
 			],
-			structuredContent: { resource: resourceLevel },
+			structuredContent: { resource: resourceLevel, closing: closingLevel },
 		};
 	},
 );
@@ -154,7 +168,9 @@ app.post("/add", async (req, res) => {
 	try {
 		const data = historySchema.parse(req.body);
 		history.push({ from: data.from, message: data.message });
-		notify({ from: data.from, message: data.message });
+		if (closingLevel !== 100) {
+			notify({ from: data.from, message: data.message });
+		}
 		res.json({
 			success: true,
 			history,
