@@ -71,20 +71,21 @@ server.registerTool(
 		resourceLevel -= amount;
 		console.log("消費", amount, "残量", resourceLevel);
 		history.push({ from, message });
-		if (closingLevel !== 100) notify({ from, message });
 
 		if (history.length > 25) {
 			closingLevel = 100;
 			setTimeout(() => {
 				history.length = 0;
 				closingLevel = 0;
-			}, 5000);
+			}, 10000);
 		} else if (history.length > 15) {
 			closingLevel = 50;
 		} else if (history.length > 10) {
 			closingLevel = 25;
 		}
 		console.log("Closing", closingLevel);
+
+		if (closingLevel !== 100) notify({ from, message });
 
 		setTimeout(() => {
 			resourceLevel = Math.min(100, resourceLevel + amount);
